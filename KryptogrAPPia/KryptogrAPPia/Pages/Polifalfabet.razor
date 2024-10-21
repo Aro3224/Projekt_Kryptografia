@@ -16,14 +16,14 @@
             <input type="text" id="key" @bind="Key" />
         </div>
 
-        <button @onclick="() => EncryptPoli(OriginalText)">Zaszyfruj</button>
+        <button @onclick="() => EncryptPoli(OriginalText, Key)">Zaszyfruj</button>
     </div>
 
     @if (EncryptedText is not null)
     {
         <div class="container-fluid d-flex flex-column gap-2">
             <span>Zaszyfrowany tekst: @EncryptedText</span>
-            <button @onclick="() => DecryptPoli()">Odszyfruj</button>
+            <button @onclick="DecryptPoli">Odszyfruj</button>
         </div>
     }
 
@@ -34,4 +34,3 @@
         </div>
     }
 </div>
-
