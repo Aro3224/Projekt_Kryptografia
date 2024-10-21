@@ -2,4 +2,31 @@
 
 <PageTitle>Polialfabet</PageTitle>
 
-<h1>WIP Polialfabet</h1>
+<div class="container d-flex flex-column gap-4">
+    <div class="container-fluid d-flex flex-column gap-2">
+        <div>
+            <label for="originaltext">Tekst do zaszyfrowania:</label>
+            <input type="text" id="originaltext" @bind="OriginalText" />
+        </div>
+        <div>
+            <label for="key">Klucz:</label>
+            <input type="text" id="key" @bind="Key" />
+        </div>
+
+        <button @onclick="() => EncryptPoli(OriginalText)">Zaszyfruj</button>
+    </div>
+
+    @if (EncryptedText is not null)
+    {
+        <div class="container-fluid d-flex flex-column gap-2">
+            <span>Zaszyfrowany tekst: @EncryptedText</span>
+            <button @onclick="() => DecryptPoli()">Odszyfruj</button>
+
+            @if (DecryptedText is not null)
+            {
+                <span>Odszyfrowany tekst: @DecryptedText</span>
+            }
+        </div>
+    }
+</div>
+
