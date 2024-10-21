@@ -4,7 +4,7 @@ namespace KryptogrAPPia.Pages
     {
         private string OriginalText { get; set; }
 
-        private int Key { get; set; }
+        private string Key { get; set; }
         private string EncryptedText { get; set; }
 
         private string DecryptedText { get; set; }

@@ -3,6 +3,9 @@
 <PageTitle>Polialfabet</PageTitle>
 
 <div class="container d-flex flex-column gap-4">
+
+    <h4 class="text-center">Szyfr Vigenère’a</h4>
+
     <div class="container-fluid d-flex flex-column gap-2">
         <div>
             <label for="originaltext">Tekst do zaszyfrowania:</label>
@@ -21,11 +24,13 @@
         <div class="container-fluid d-flex flex-column gap-2">
             <span>Zaszyfrowany tekst: @EncryptedText</span>
             <button @onclick="() => DecryptPoli()">Odszyfruj</button>
+        </div>
+    }
 
-            @if (DecryptedText is not null)
-            {
-                <span>Odszyfrowany tekst: @DecryptedText</span>
-            }
+    @if (DecryptedText is not null)
+    {
+        <div class="container-fluid d-flex flex-column gap-2">
+            <span>Odszyfrowany tekst: @DecryptedText</span>
         </div>
     }
 </div>
