@@ -2,4 +2,53 @@
 
 <PageTitle>Transpozycja</PageTitle>
 
-<h1>WIP Transpozycja</h1>
+<div class="container d-flex flex-column gap-4">
+
+
+    <div class="container-fluid d-flex flex-column gap-2">
+        <div>
+            <label for="originaltext">Tekst do zaszyfrowania:</label>
+            <input type="text" id="originaltext" @bind="OriginalText" disabled="@IsInputDisabled" />
+        </div>
+        <div>
+            <label for="columns">Liczba kolumn (dla transpozycji):</label>
+            <input type="number" id="columns" @bind="ColumnCount" disabled="@IsInputDisabled" min="1" />
+        </div>
+
+        <button @onclick="EncryptTransposition">Zaszyfruj</button>
+    </div>
+
+    @if (!string.IsNullOrEmpty(ErrorMessage))
+    {
+        <div class="alert alert-danger">@ErrorMessage</div>
+    }
+
+    @if (Matrix is not null)
+    {
+        <h5>Macierz szyfrująca:</h5>
+        <div class="matrix-grid" style="grid-template-columns: repeat(@ColumnCount, auto);">
+            @foreach (var row in Matrix)
+            {
+                @foreach (var cell in row)
+                {
+                    <div class="matrix-cell">@(cell == '\0' ? "" : cell.ToString())</div>
+                }
+            }
+        </div>
+    }
+
+    @if (EncryptedText is not null)
+    {
+        <div class="container-fluid d-flex flex-column gap-2">
+            <span>Zaszyfrowany tekst: @EncryptedText</span>
+            <button @onclick="DecryptTransposition">Odszyfruj</button>
+        </div>
+    }
+
+    @if (DecryptedText is not null)
+    {
+        <div class="container-fluid d-flex flex-column gap-2">
+            <span>Odszyfrowany tekst: @DecryptedText</span>
+        </div>
+    }
+</div>
