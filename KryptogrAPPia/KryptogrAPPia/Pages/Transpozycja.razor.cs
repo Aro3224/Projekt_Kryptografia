@@ -10,7 +10,6 @@ namespace KryptogrAPPia.Pages
         private string ErrorMessage { get; set; } = string.Empty;
         private char[][] Matrix { get; set; }
 
-        // Metoda szyfrowania z walidacj¹
         private void EncryptTransposition()
         {
             if (string.IsNullOrWhiteSpace(OriginalText) || ColumnCount < 1)
@@ -23,14 +22,14 @@ namespace KryptogrAPPia.Pages
 
             // Wygeneruj macierz transpozycji i zaszyfruj tekst
             EncryptedText = TranspositionCipher(OriginalText, ColumnCount, true);
-            IsInputDisabled = true; // Blokowanie pól po szyfrowaniu
+            IsInputDisabled = true;
         }
 
         // Metoda deszyfrowania
         private void DecryptTransposition()
         {
             DecryptedText = TranspositionCipher(EncryptedText, ColumnCount, false);
-            IsInputDisabled = false; // Odblokowanie pól po odszyfrowaniu
+            IsInputDisabled = false;
         }
 
         // Algorytm transpozycyjny

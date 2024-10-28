@@ -9,27 +9,25 @@
         private bool IsInputDisabled { get; set; } = false;
         private string ErrorMessage { get; set; } = string.Empty;
 
-        // Metoda szyfrowania z walidacją
         private void EncryptPoli()
         {
-            // Sprawdzanie, czy tekst i klucz są podane
             if (string.IsNullOrWhiteSpace(OriginalText) || string.IsNullOrWhiteSpace(Key))
             {
                 ErrorMessage = "Tekst oraz klucz muszą być podane.";
                 return;
             }
 
-            ErrorMessage = string.Empty; // Czyszczenie komunikatu o błędzie
+            ErrorMessage = string.Empty;
 
             EncryptedText = VigenereCipher(OriginalText, Key, true);
-            IsInputDisabled = true; // Blokowanie pól po szyfrowaniu
+            IsInputDisabled = true;
         }
 
         // Metoda deszyfrowania
         private void DecryptPoli()
         {
             DecryptedText = VigenereCipher(EncryptedText, Key, false);
-            IsInputDisabled = false; // Odblokowanie pól po odszyfrowaniu
+            IsInputDisabled = false;
         }
 
         // Algorytm Vigenère’a
