@@ -11,12 +11,14 @@ namespace KryptogrAPPia.Pages
         private string EncryptedText { get; set; }
         private string DecryptedText { get; set; }
         private string ErrorMessage { get; set; } = string.Empty;
-        private bool isEncrypted { get; set; } = false; // Zmienna kontroluj¹ca blokadê edytowalnoœci
+        private bool isEncrypted { get; set; } = false;
 
         private async Task EncryptText()
         {
             try
             {
+                ErrorMessage = string.Empty;
+
                 // Walidacja d³ugoœci klucza
                 if (string.IsNullOrEmpty(EncryptionKey) || (EncryptionKey.Length != 16 && EncryptionKey.Length != 24 && EncryptionKey.Length != 32))
                 {
@@ -27,12 +29,11 @@ namespace KryptogrAPPia.Pages
                 EncryptedText = await JS.InvokeAsync<string>("encryptAES", InputText, EncryptionKey);
                 Console.WriteLine($"Zaszyfrowany tekst: {EncryptedText}");
 
-                // Zablokowanie edycji
-                isEncrypted = true; // Blokada dla pól
+                isEncrypted = true;
             }
             catch (Exception ex)
             {
-                ErrorMessage = ex.Message; // Zapisz komunikat b³êdu
+                ErrorMessage = ex.Message;
             }
         }
 
@@ -40,6 +41,8 @@ namespace KryptogrAPPia.Pages
         {
             try
             {
+                ErrorMessage = string.Empty;
+
                 // Walidacja d³ugoœci klucza
                 if (string.IsNullOrEmpty(EncryptionKey) || (EncryptionKey.Length != 16 && EncryptionKey.Length != 24 && EncryptionKey.Length != 32))
                 {
@@ -50,12 +53,11 @@ namespace KryptogrAPPia.Pages
                 DecryptedText = await JS.InvokeAsync<string>("decryptAES", EncryptedText, EncryptionKey);
                 Console.WriteLine($"Odszyfrowany tekst: {DecryptedText}");
 
-                // Odblokowanie edycji
-                isEncrypted = false; // Odblokowanie dla pól
+                isEncrypted = false;
             }
             catch (Exception ex)
             {
-                ErrorMessage = ex.Message; // Zapisz komunikat b³êdu
+                ErrorMessage = ex.Message;
             }
         }
 

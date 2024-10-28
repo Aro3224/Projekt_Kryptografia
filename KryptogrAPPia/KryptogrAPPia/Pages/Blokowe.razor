@@ -24,9 +24,8 @@
     @if (!string.IsNullOrEmpty(EncryptedText))
     {
         <div class="container-fluid d-flex flex-column gap-2">
-            <span style="word-wrap: break-word;">Zaszyfrowany tekst: @EncryptedText</span>
-
-            <!-- Przycisk Odszyfruj -->
+            <label>Zaszyfrowany tekst:</label>
+            <textarea class="text" readonly>@EncryptedText</textarea>
             <button @onclick="DecryptText">Odszyfruj tekst</button>
         </div>
     }
