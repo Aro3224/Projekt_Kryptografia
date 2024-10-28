@@ -1,0 +1,33 @@
+﻿@page "/blokowe"
+@inject IJSRuntime JS
+
+<PageTitle>Szyfrowanie Blokowe</PageTitle>
+
+<div class="container d-flex flex-column">
+    <h4 class="text-center">Szyfrowanie AES</h4>
+
+    <div class="mb-3">
+        <label for="inputText">Tekst do zaszyfrowania:</label>
+        <input type="text" id="inputText" @bind="InputText" />
+    </div>
+
+    <div class="mb-3">
+        <label for="encryptionKey">Klucz szyfrowania:</label>
+        <input type="text" id="encryptionKey" @bind="EncryptionKey" />
+    </div>
+
+    <button @onclick="EncryptText">Zaszyfruj tekst</button>
+
+    @if (!string.IsNullOrEmpty(ErrorMessage))
+    {
+        <div class="mt-3 alert alert-danger">@ErrorMessage</div>
+    }
+
+    @if (!string.IsNullOrEmpty(EncryptedText))
+    {
+        <div class="mt-3">
+            <h5>Zaszyfrowany tekst:</h5>
+            <textarea class="form-control" readonly>@EncryptedText</textarea>
+        </div>
+    }
+</div>
