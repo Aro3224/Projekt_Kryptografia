@@ -4,20 +4,23 @@
 
 <div class="container d-flex flex-column gap-4">
 
-    <h4 class="text-center">Szyfr Vigenère’a</h4>
-
     <div class="container-fluid d-flex flex-column gap-2">
         <div>
             <label for="originaltext">Tekst do zaszyfrowania:</label>
-            <input type="text" id="originaltext" @bind="OriginalText" />
+            <input type="text" id="originaltext" @bind="OriginalText" disabled="@IsInputDisabled" />
         </div>
         <div>
             <label for="key">Klucz:</label>
-            <input type="text" id="key" @bind="Key" />
+            <input type="text" id="key" @bind="Key" disabled="@IsInputDisabled" />
         </div>
 
-        <button @onclick="() => EncryptPoli(OriginalText, Key)">Zaszyfruj</button>
+        <button @onclick="EncryptPoli">Zaszyfruj</button>
     </div>
+
+    @if (!string.IsNullOrEmpty(ErrorMessage))
+    {
+        <div class="alert alert-danger">@ErrorMessage</div>
+    }
 
     @if (EncryptedText is not null)
     {
