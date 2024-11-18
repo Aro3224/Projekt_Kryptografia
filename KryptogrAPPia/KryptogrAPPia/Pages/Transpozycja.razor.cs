@@ -21,69 +21,115 @@ namespace KryptogrAPPia.Pages
             ErrorMessage = string.Empty;
 
             // Wygeneruj macierz transpozycji i zaszyfruj tekst
-            EncryptedText = TranspositionCipher(OriginalText, ColumnCount, true);
+            Matrix = GenerateMatrix(OriginalText, ColumnCount);
+            EncryptedText = TransposeMatrix(Matrix, ColumnCount, encrypt: true);
             IsInputDisabled = true;
         }
 
-        // Metoda deszyfrowania
         private void DecryptTransposition()
         {
-            DecryptedText = TranspositionCipher(EncryptedText, ColumnCount, false);
+            if (string.IsNullOrWhiteSpace(EncryptedText) || ColumnCount < 1)
+            {
+                ErrorMessage = "Zaszyfrowany tekst oraz liczba kolumn musz¹ byæ podane.";
+                return;
+            }
+
+            ErrorMessage = string.Empty;
+
+            // Deszyfrowanie poprzez odbudowanie macierzy z zaszyfrowanego tekstu
+            Matrix = GenerateDecryptionMatrix(EncryptedText, ColumnCount);
+            DecryptedText = TransposeMatrix(Matrix, ColumnCount, encrypt: false);
             IsInputDisabled = false;
         }
 
-        // Algorytm transpozycyjny
-        private string TranspositionCipher(string text, int columns, bool encrypt)
+        // Generowanie macierzy do szyfrowania na podstawie tekstu i liczby kolumn
+        private char[][] GenerateMatrix(string text, int columns)
         {
             int rows = (int)Math.Ceiling((double)text.Length / columns);
-            Matrix = new char[rows][];
-
+            var matrix = new char[rows][];
             int charIndex = 0;
+
             for (int i = 0; i < rows; i++)
             {
-                Matrix[i] = new char[columns];
+                matrix[i] = new char[columns];
                 for (int j = 0; j < columns; j++)
                 {
-                    Matrix[i][j] = charIndex < text.Length ? text[charIndex++] : '\0'; // Puste miejsce '\0'
+                    matrix[i][j] = charIndex < text.Length ? text[charIndex++] : '\0';
                 }
             }
+            return matrix;
+        }
+
+        // Generowanie macierzy do deszyfrowania na podstawie zaszyfrowanego tekstu i liczby kolumn
+        private char[][] GenerateDecryptionMatrix(string encryptedText, int columns)
+        {
+            int rows = (int)Math.Ceiling((double)encryptedText.Length / columns);
+            var matrix = new char[rows][];
+            int charIndex = 0;
+
+            // Oblicz, ile znaków przypada na ka¿d¹ kolumnê
+            int fullColumns = encryptedText.Length % columns;
+            int fullColumnHeight = rows;
+            int shortColumnHeight = rows - 1;
+
+            // Inicjalizacja macierzy
+            for (int i = 0; i < rows; i++)
+            {
+                matrix[i] = new char[columns];
+            }
+
+            // Wype³nianie macierzy kolumnami, uwzglêdniaj¹c wysokoœæ ka¿dej kolumny
+            for (int col = 0; col < columns; col++)
+            {
+                int currentHeight = (col < fullColumns) ? fullColumnHeight : shortColumnHeight;
+                for (int row = 0; row < currentHeight; row++)
+                {
+                    if (charIndex < encryptedText.Length)
+                    {
+                        matrix[row][col] = encryptedText[charIndex++];
+                    }
+                }
+            }
+
+            return matrix;
+        }
+
+        // Algorytm transpozycyjny do szyfrowania i deszyfrowania
+        private string TransposeMatrix(char[][] matrix, int columns, bool encrypt)
+        {
+            int rows = matrix.Length;
+            string result = "";
 
             if (encrypt)
             {
-                string result = "";
+                // Czytanie kolumnami dla szyfrowania
                 for (int j = 0; j < columns; j++)
                 {
                     for (int i = 0; i < rows; i++)
                     {
-                        if (Matrix[i][j] != '\0') // Pomijanie pustych miejsc na koñcu
+                        if (matrix[i][j] != '\0')
                         {
-                            result += Matrix[i][j];
+                            result += matrix[i][j];
                         }
                     }
                 }
-                return result;
             }
             else
             {
-                charIndex = 0;
-                string result = "";
-                for (int j = 0; j < columns; j++)
+                // Odczytywanie wierszami dla odszyfrowania
+                for (int i = 0; i < rows; i++)
                 {
-                    for (int i = 0; i < rows; i++)
+                    for (int j = 0; j < columns; j++)
                     {
-                        if (charIndex < text.Length)
+                        if (matrix[i][j] != '\0')
                         {
-                            Matrix[i][j] = text[charIndex++];
+                            result += matrix[i][j];
                         }
                     }
                 }
-
-                foreach (var row in Matrix)
-                {
-                    result += new string(row);
-                }
-                return result.TrimEnd('\0'); // Usuniêcie pustych miejsc na koñcu
             }
+
+            return result;
         }
     }
 }
