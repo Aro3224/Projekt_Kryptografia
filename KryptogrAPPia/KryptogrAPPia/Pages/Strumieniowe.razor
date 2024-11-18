@@ -1,3 +1,50 @@
 ﻿@page "/strumieniowe"
+@inject IJSRuntime JS
 
-<PageTitle>Szyfrowanie strumieniowe</PageTitle>
+<PageTitle>Szyfrowanie Strumieniowe - RC4</PageTitle>
+
+<div class="container d-flex flex-column gap-4">
+    <h4 class="text-center">Szyfrowanie Strumieniowe z RC4</h4>
+
+    <div class="container-fluid d-flex flex-column gap-2">
+        <div>
+            <label for="inputText">Tekst do zaszyfrowania:</label>
+            <input type="text" id="inputText" @bind="InputText" disabled="@isEncrypted" />
+        </div>
+        <div>
+            <label for="encryptionKey">Klucz szyfrowania:</label>
+            <input type="text" id="encryptionKey" @bind="EncryptionKey" disabled="@isEncrypted" />
+        </div>
+        <div>
+            <label for="iv">Wektor inicjalizacyjny (IV):</label>
+            <input type="text" id="iv" @bind="IV" disabled="@isEncrypted" />
+        </div>
+
+        <InputFile OnChange="LoadFile" disabled="@isEncrypted" />
+
+        <button @onclick="EncryptText" disabled="@isEncrypted">Zaszyfruj tekst</button>
+    </div>
+
+    @if (!string.IsNullOrEmpty(EncryptedText))
+    {
+        <div class="container-fluid d-flex flex-column gap-2">
+            <label>Zaszyfrowany tekst:</label>
+            <textarea class="text" readonly>@EncryptedText</textarea>
+            <button @onclick="DecryptText" disabled="@isDecrypting">Odszyfruj tekst</button>
+        </div>
+    }
+
+    @if (!string.IsNullOrEmpty(DecryptedText))
+    {
+        <div>
+            <span>Odszyfrowany tekst: @DecryptedText</span>
+        </div>
+    }
+
+    @if (!string.IsNullOrEmpty(ErrorMessage))
+    {
+        <div class="alert alert-danger">@ErrorMessage</div>
+    }
+</div>
+
+

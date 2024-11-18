@@ -4,7 +4,7 @@ using System.Text;
 
 namespace KryptogrAPPia.Pages
 {
-    public partial class Blokowe
+    public partial class BlokoweDes
     {
         private string InputText { get; set; }
 
@@ -20,24 +20,24 @@ namespace KryptogrAPPia.Pages
 
         private bool isDecrypting { get; set; } = false;
 
-        //Funkcja odpowiedzialna za szyfrowanie tekstu.
+        // Funkcja odpowiedzialna za szyfrowanie tekstu.
         private async Task EncryptText()
         {
             try
             {
                 ErrorMessage = string.Empty;
 
-                //Walidacja d³ugoœci klucza szyfrowania
+                // Walidacja d³ugoœci klucza szyfrowania
                 if (string.IsNullOrEmpty(EncryptionKey) || EncryptionKey.Length < 8)
                 {
                     throw new Exception("Klucz szyfrowania musi mieæ co najmniej 8 znaków.");
                 }
 
-                //Szyfrowanie tekstu
-                EncryptedText = await JS.InvokeAsync<string>("encryptAES", InputText, EncryptionKey);
+                // Szyfrowanie tekstu za pomoc¹ DES
+                EncryptedText = await JS.InvokeAsync<string>("encryptDES", InputText, EncryptionKey);
                 Console.WriteLine($"Zaszyfrowany tekst: {EncryptedText}");
 
-                //Zablokowanie przycisków po zaszyfrowaniu
+                // Zablokowanie przycisków po zaszyfrowaniu
                 isEncrypted = true;
                 isDecrypting = false;
             }
@@ -47,29 +47,29 @@ namespace KryptogrAPPia.Pages
             }
         }
 
-        //Funkcja odpowiedzialna za deszyfrowanie tekstu.
+        // Funkcja odpowiedzialna za deszyfrowanie tekstu.
         private async Task DecryptText()
         {
             try
             {
                 ErrorMessage = string.Empty;
 
-                //Walidacja d³ugoœci klucza deszyfrowania
+                // Walidacja d³ugoœci klucza deszyfrowania
                 if (string.IsNullOrEmpty(EncryptionKey) || EncryptionKey.Length < 8)
                 {
                     throw new Exception("Klucz deszyfrowania musi mieæ co najmniej 8 znaków.");
                 }
 
-                //Zablokowanie przycisku "Odszyfruj" podczas deszyfrowania
+                // Zablokowanie przycisku "Odszyfruj" podczas deszyfrowania
                 isDecrypting = true;
 
-                //Odszyfrowanie tekstu
-                DecryptedText = await JS.InvokeAsync<string>("decryptAES", EncryptedText, EncryptionKey);
+                // Odszyfrowanie tekstu za pomoc¹ DES
+                DecryptedText = await JS.InvokeAsync<string>("decryptDES", EncryptedText, EncryptionKey);
                 Console.WriteLine($"Odszyfrowany tekst: {DecryptedText}");
 
-                //Odblokowanie przycisków po deszyfrowaniu
+                // Odblokowanie przycisków po deszyfrowaniu
                 isEncrypted = false;
-                isDecrypting = true;
+                isDecrypting = false;
             }
             catch (Exception ex)
             {
@@ -78,7 +78,7 @@ namespace KryptogrAPPia.Pages
             }
         }
 
-        //Funkcja odpowiedzialna za za³adowanie pliku tekstowego do zaszyfrowania.
+        // Funkcja odpowiedzialna za za³adowanie pliku tekstowego do zaszyfrowania.
         private async Task LoadFile(InputFileChangeEventArgs e)
         {
             var file = e.File;
