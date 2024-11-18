@@ -56,3 +56,37 @@ window.decryptDES = function (encryptedText, key) {
     const decrypted = CryptoJS.DES.decrypt(encryptedText, keyBytes, { iv: iv });
     return decrypted.toString(CryptoJS.enc.Utf8);
 };
+
+// Szyfrowanie strumieniowe (RC4, z IV)
+window.encryptStream = function (plainText, key, iv) {
+    // Sprawdzenie, czy CryptoJS jest załadowane
+    if (typeof CryptoJS === 'undefined') {
+        console.error("CryptoJS is not loaded.");
+        return;
+    }
+
+    // Generowanie IV w formacie odpowiednim dla CryptoJS
+    const ivBytes = CryptoJS.enc.Utf8.parse(iv); // Wektor inicjalizacji
+    const keyBytes = CryptoJS.enc.Utf8.parse(key); // Klucz
+
+    // Szyfrowanie strumieniowe przy użyciu RC4
+    const encrypted = CryptoJS.RC4.encrypt(plainText, keyBytes);
+    return encrypted.toString();
+};
+
+// Deszyfrowanie strumieniowe (RC4, z IV)
+window.decryptStream = function (encryptedText, key, iv) {
+    // Sprawdzenie, czy CryptoJS jest załadowane
+    if (typeof CryptoJS === 'undefined') {
+        console.error("CryptoJS is not loaded.");
+        return;
+    }
+
+    // Generowanie IV w formacie odpowiednim dla CryptoJS
+    const ivBytes = CryptoJS.enc.Utf8.parse(iv); // Wektor inicjalizacji
+    const keyBytes = CryptoJS.enc.Utf8.parse(key); // Klucz
+
+    // Deszyfrowanie strumieniowe przy użyciu RC4
+    const decrypted = CryptoJS.RC4.decrypt(encryptedText, keyBytes);
+    return decrypted.toString(CryptoJS.enc.Utf8);
+};
