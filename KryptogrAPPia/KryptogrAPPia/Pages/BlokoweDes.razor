@@ -1,5 +1,44 @@
 ﻿@page "/blokowe_DES"
+@inject IJSRuntime JS
 
-<h3>BlokoweDes</h3>
+<PageTitle>Szyfrowanie Blokowe - DES</PageTitle>
 
+<div class="container d-flex flex-column gap-4">
+    <h4 class="text-center">Szyfrowanie AES</h4>
 
+    <div class="container-fluid d-flex flex-column gap-2">
+        <div>
+            <label for="inputText">Tekst do zaszyfrowania:</label>
+            <input type="text" id="inputText" @bind="InputText" disabled="@isEncrypted" />
+        </div>
+        <div>
+            <label for="encryptionKey">Klucz szyfrowania:</label>
+            <input type="text" id="encryptionKey" @bind="EncryptionKey" disabled="@isEncrypted" />
+        </div>
+
+        <InputFile OnChange="LoadFile" disabled="@isEncrypted" />
+
+        <button @onclick="EncryptText" disabled="@isEncrypted">Zaszyfruj tekst</button>
+    </div>
+
+    @if (!string.IsNullOrEmpty(EncryptedText))
+    {
+        <div class="container-fluid d-flex flex-column gap-2">
+            <label>Zaszyfrowany tekst:</label>
+            <textarea class="text" readonly>@EncryptedText</textarea>
+            <button @onclick="DecryptText" disabled="@isDecrypting">Odszyfruj tekst</button>
+        </div>
+    }
+
+    @if (!string.IsNullOrEmpty(DecryptedText))
+    {
+        <div>
+            <span>Odszyfrowany tekst: @DecryptedText</span>
+        </div>
+    }
+
+    @if (!string.IsNullOrEmpty(ErrorMessage))
+    {
+        <div class="alert alert-danger">@ErrorMessage</div>
+    }
+</div>
