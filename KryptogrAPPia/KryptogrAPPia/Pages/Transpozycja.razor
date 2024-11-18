@@ -3,6 +3,7 @@
 <PageTitle>Transpozycja</PageTitle>
 
 <div class="container d-flex flex-column gap-4">
+
     <div class="container-fluid d-flex flex-column gap-2">
         <div>
             <label for="originaltext">Tekst do zaszyfrowania:</label>
@@ -10,7 +11,7 @@
         </div>
         <div>
             <label for="columns">Liczba kolumn (dla transpozycji):</label>
-            <input type="number" id="columns" @bind="ColumnCount" disabled="@IsInputDisabled" min="1" />
+            <input type="number" id="columns" @bind="ColumnCount" @oninput="DisableDecryptButton" disabled="@IsInputDisabled" min="1" />
         </div>
 
         <button @onclick="EncryptTransposition">Zaszyfruj</button>
@@ -39,7 +40,7 @@
     {
         <div class="container-fluid d-flex flex-column gap-2">
             <span>Zaszyfrowany tekst: @EncryptedText</span>
-            <button @onclick="DecryptTransposition">Odszyfruj</button>
+            <button @onclick="DecryptTransposition" disabled="@IsDecryptButtonDisabled">Odszyfruj</button>
         </div>
     }
 

@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Components;
+
 namespace KryptogrAPPia.Pages
 {
     public partial class Transpozycja
@@ -7,23 +9,29 @@ namespace KryptogrAPPia.Pages
         private string EncryptedText { get; set; }
         private string DecryptedText { get; set; }
         private bool IsInputDisabled { get; set; } = false;
+        private bool IsDecryptButtonDisabled { get; set; } = true;
         private string ErrorMessage { get; set; } = string.Empty;
         private char[][] Matrix { get; set; }
 
         private void EncryptTransposition()
         {
-            if (string.IsNullOrWhiteSpace(OriginalText) || ColumnCount < 1)
+            if (string.IsNullOrWhiteSpace(OriginalText))
             {
-                ErrorMessage = "Tekst oraz liczba kolumn musz¹ byæ podane.";
+                ErrorMessage = "Tekst do zaszyfrowania nie mo¿e byæ pusty.";
+                return;
+            }
+
+            if (ColumnCount < 1 || ColumnCount >= OriginalText.Length)
+            {
+                ErrorMessage = "Liczba kolumn musi byæ wiêksza od 0 i mniejsza ni¿ d³ugoœæ tekstu.";
                 return;
             }
 
             ErrorMessage = string.Empty;
-
-            // Wygeneruj macierz transpozycji i zaszyfruj tekst
             Matrix = GenerateMatrix(OriginalText, ColumnCount);
             EncryptedText = TransposeMatrix(Matrix, ColumnCount, encrypt: true);
             IsInputDisabled = true;
+            IsDecryptButtonDisabled = false;
         }
 
         private void DecryptTransposition()
@@ -35,14 +43,12 @@ namespace KryptogrAPPia.Pages
             }
 
             ErrorMessage = string.Empty;
-
-            // Deszyfrowanie poprzez odbudowanie macierzy z zaszyfrowanego tekstu
             Matrix = GenerateDecryptionMatrix(EncryptedText, ColumnCount);
             DecryptedText = TransposeMatrix(Matrix, ColumnCount, encrypt: false);
             IsInputDisabled = false;
+            IsDecryptButtonDisabled = true;
         }
 
-        // Generowanie macierzy do szyfrowania na podstawie tekstu i liczby kolumn
         private char[][] GenerateMatrix(string text, int columns)
         {
             int rows = (int)Math.Ceiling((double)text.Length / columns);
@@ -60,25 +66,21 @@ namespace KryptogrAPPia.Pages
             return matrix;
         }
 
-        // Generowanie macierzy do deszyfrowania na podstawie zaszyfrowanego tekstu i liczby kolumn
         private char[][] GenerateDecryptionMatrix(string encryptedText, int columns)
         {
             int rows = (int)Math.Ceiling((double)encryptedText.Length / columns);
             var matrix = new char[rows][];
             int charIndex = 0;
 
-            // Oblicz, ile znaków przypada na ka¿d¹ kolumnê
             int fullColumns = encryptedText.Length % columns;
             int fullColumnHeight = rows;
             int shortColumnHeight = rows - 1;
 
-            // Inicjalizacja macierzy
             for (int i = 0; i < rows; i++)
             {
                 matrix[i] = new char[columns];
             }
 
-            // Wype³nianie macierzy kolumnami, uwzglêdniaj¹c wysokoœæ ka¿dej kolumny
             for (int col = 0; col < columns; col++)
             {
                 int currentHeight = (col < fullColumns) ? fullColumnHeight : shortColumnHeight;
@@ -94,7 +96,6 @@ namespace KryptogrAPPia.Pages
             return matrix;
         }
 
-        // Algorytm transpozycyjny do szyfrowania i deszyfrowania
         private string TransposeMatrix(char[][] matrix, int columns, bool encrypt)
         {
             int rows = matrix.Length;
@@ -102,7 +103,6 @@ namespace KryptogrAPPia.Pages
 
             if (encrypt)
             {
-                // Czytanie kolumnami dla szyfrowania
                 for (int j = 0; j < columns; j++)
                 {
                     for (int i = 0; i < rows; i++)
@@ -116,7 +116,6 @@ namespace KryptogrAPPia.Pages
             }
             else
             {
-                // Odczytywanie wierszami dla odszyfrowania
                 for (int i = 0; i < rows; i++)
                 {
                     for (int j = 0; j < columns; j++)
@@ -130,6 +129,12 @@ namespace KryptogrAPPia.Pages
             }
 
             return result;
+        }
+
+        private void DisableDecryptButton(ChangeEventArgs e)
+        {
+            IsDecryptButtonDisabled = true;
+            DecryptedText = null;
         }
     }
 }
