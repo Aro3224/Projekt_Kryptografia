@@ -1,64 +1,103 @@
-ï»¿namespace KryptogrAPPia.Pages
+using System.Text;
+
+namespace KryptogrAPPia.Pages
 {
     public partial class Polifalfabet
     {
-        private string OriginalText { get; set; } = string.Empty;
-        private string Key { get; set; } = string.Empty;
+        private string OriginalText { get; set; }
+        private string Key { get; set; }
         private string EncryptedText { get; set; }
         private string DecryptedText { get; set; }
+        private string ErrorMessage { get; set; }
         private bool IsInputDisabled { get; set; } = false;
-        private string ErrorMessage { get; set; } = string.Empty;
 
-        private void EncryptPoli()
+        //Wywo³anie funkcji szyfrowania tekstu za pomoc¹ szyfru Gronsfelda
+        private void EncryptGronsfeld()
         {
             if (string.IsNullOrWhiteSpace(OriginalText) || string.IsNullOrWhiteSpace(Key))
             {
-                ErrorMessage = "Tekst oraz klucz muszÄ… byÄ‡ podane.";
+                ErrorMessage = "Proszê wprowadziæ zarówno tekst jak i klucz.";
+                return;
+            }
+
+            if (!IsKeyValid(Key))
+            {
+                ErrorMessage = "Klucz musi sk³adaæ siê wy³¹cznie z cyfr.";
                 return;
             }
 
             ErrorMessage = string.Empty;
-
-            EncryptedText = VigenereCipher(OriginalText, Key, true);
+            EncryptedText = GronsfeldCipher(OriginalText, Key, encrypt: true);
             IsInputDisabled = true;
         }
 
-        // Metoda deszyfrowania
-        private void DecryptPoli()
+        //Odszyfrowanie tekstu
+        private void DecryptGronsfeld()
         {
-            DecryptedText = VigenereCipher(EncryptedText, Key, false);
+            if (string.IsNullOrWhiteSpace(EncryptedText) || string.IsNullOrWhiteSpace(Key))
+            {
+                ErrorMessage = "Proszê wprowadziæ zaszyfrowany tekst i klucz.";
+                return;
+            }
+
+            if (!IsKeyValid(Key))
+            {
+                ErrorMessage = "Klucz musi sk³adaæ siê wy³¹cznie z cyfr.";
+                return;
+            }
+
+            ErrorMessage = string.Empty;
+            DecryptedText = GronsfeldCipher(EncryptedText, Key, encrypt: false);
             IsInputDisabled = false;
         }
 
-        // Algorytm VigenÃ¨reâ€™a
-        private string VigenereCipher(string text, string key, bool encrypt)
+        //Implementacja szyfru Gronsfelda
+        private string GronsfeldCipher(string text, string cipherKey, bool encrypt)
         {
-            string result = "";
-            key = key.ToUpper();
-            text = text.ToUpper();
-            int keyIndex = 0;
+            var result = new StringBuilder();
+            var keyIndex = 0;
+            var keyLength = cipherKey.Length;
 
-            for (int i = 0; i < text.Length; i++)
+            foreach (var ch in text)
             {
-                char currentChar = text[i];
-
-                if (char.IsLetter(currentChar))
+                //Przesuwanie tylko liter
+                if (char.IsLetter(ch))
                 {
-                    int offset = key[keyIndex] - 'A';
-                    if (!encrypt) offset = -offset;
+                    //Okreœlenie przesuniêcia na podstawie cyfry w kluczu
+                    int shift = int.Parse(cipherKey[keyIndex % keyLength].ToString());
 
-                    char newChar = (char)((currentChar + offset - 'A' + 26) % 26 + 'A');
-                    result += newChar;
+                    //Jeœli odszyfrowujemy, to u¿ywamy przesuniêcia w przeciwn¹ stronê
+                    if (!encrypt)
+                    {
+                        shift = 26 - shift; //Odejmujemy przesuniêcie zamiast dodawaæ
+                    }
 
-                    keyIndex = (keyIndex + 1) % key.Length;
+                    //Przesuniêcie dla ma³ych liter
+                    if (char.IsLower(ch))
+                    {
+                        result.Append((char)((((ch - 'a') + shift) % 26) + 'a'));
+                    }
+                    //Przesuniêcie dla du¿ych liter
+                    else if (char.IsUpper(ch))
+                    {
+                        result.Append((char)((((ch - 'A') + shift) % 26) + 'A'));
+                    }
+
+                    keyIndex++; //Przechodzimy do kolejnej cyfry w kluczu
                 }
                 else
                 {
-                    result += currentChar;
+                    result.Append(ch); //Dodajemy inne znaki bez zmian (np. spacje, przecinki)
                 }
             }
 
-            return result;
+            return result.ToString();
+        }
+
+        //Sprawdzanie, czy klucz zawiera tylko cyfry
+        private bool IsKeyValid(string key)
+        {
+            return key.All(char.IsDigit);
         }
     }
 }

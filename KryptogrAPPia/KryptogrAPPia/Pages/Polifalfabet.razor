@@ -1,6 +1,9 @@
 ﻿@page "/"
+@using System.Text
 
 <PageTitle>Polialfabet</PageTitle>
+
+<h2>Szyfr Gronsfelda</h2>
 
 <div class="container d-flex flex-column gap-4">
 
@@ -14,7 +17,7 @@
             <input type="text" id="key" @bind="Key" disabled="@IsInputDisabled" />
         </div>
 
-        <button @onclick="EncryptPoli">Zaszyfruj</button>
+        <button @onclick="EncryptGronsfeld" disabled="@IsInputDisabled">Zaszyfruj</button>
     </div>
 
     @if (!string.IsNullOrEmpty(ErrorMessage))
@@ -26,7 +29,7 @@
     {
         <div class="container-fluid d-flex flex-column gap-2">
             <span>Zaszyfrowany tekst: @EncryptedText</span>
-            <button @onclick="DecryptPoli">Odszyfruj</button>
+            <button @onclick="DecryptGronsfeld">Odszyfruj</button>
         </div>
     }
 
