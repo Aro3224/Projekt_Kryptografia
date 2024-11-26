@@ -37,7 +37,6 @@ namespace KryptogrAPPia.Pages
                 EncryptedText = await JS.InvokeAsync<string>("encryptDES", InputText, EncryptionKey);
                 Console.WriteLine($"Zaszyfrowany tekst: {EncryptedText}");
 
-                // Zablokowanie przycisków po zaszyfrowaniu
                 isEncrypted = true;
                 isDecrypting = false;
             }
@@ -60,14 +59,12 @@ namespace KryptogrAPPia.Pages
                     throw new Exception("Klucz deszyfrowania musi mieæ co najmniej 8 znaków.");
                 }
 
-                // Zablokowanie przycisku "Odszyfruj" podczas deszyfrowania
                 isDecrypting = true;
 
                 // Odszyfrowanie tekstu za pomoc¹ DES
                 DecryptedText = await JS.InvokeAsync<string>("decryptDES", EncryptedText, EncryptionKey);
                 Console.WriteLine($"Odszyfrowany tekst: {DecryptedText}");
 
-                // Odblokowanie przycisków po deszyfrowaniu
                 isEncrypted = false;
                 isDecrypting = false;
             }

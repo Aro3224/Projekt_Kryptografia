@@ -1,10 +1,10 @@
-﻿@page "/blokowe_DES"
+﻿@page "/strumieniowe_DES"
 @inject IJSRuntime JS
 
-<PageTitle>Szyfrowanie Blokowe - DES</PageTitle>
+<PageTitle>Szyfrowanie Strumieniowe - DES</PageTitle>
 
 <div class="container d-flex flex-column gap-4">
-    <h4 class="text-center">Szyfrowanie DES</h4>
+    <h4 class="text-center">Szyfrowanie Strumieniowe DES</h4>
 
     <div class="container-fluid d-flex flex-column gap-2">
         <div>
@@ -14,6 +14,10 @@
         <div>
             <label for="encryptionKey">Klucz szyfrowania:</label>
             <input type="text" id="encryptionKey" @bind="EncryptionKey" disabled="@isEncrypted" />
+        </div>
+        <div>
+            <label for="iv">Wektor inicjalizacyjny (IV):</label>
+            <input type="text" id="iv" @bind="IV" disabled="@isEncrypted" />
         </div>
 
         <InputFile OnChange="LoadFile" disabled="@isEncrypted" />

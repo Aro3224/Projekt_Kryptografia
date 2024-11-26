@@ -23,7 +23,6 @@ window.decryptAES = function (encryptedText, key) {
     return decrypted.toString(CryptoJS.enc.Utf8);
 };
 
-// Szyfrowanie DES
 window.encryptDES = function (plainText, key) {
     // Sprawdzenie, czy CryptoJS jest załadowane
     if (typeof CryptoJS === 'undefined') {
@@ -31,16 +30,11 @@ window.encryptDES = function (plainText, key) {
         return;
     }
 
-    // Tworzenie klucza i wektora inicjalizacyjnego (IV) - przyjmujemy 8 pierwszych znaków klucza jako IV
-    const keyBytes = CryptoJS.enc.Utf8.parse(key); // Klucz DES
-    const iv = CryptoJS.enc.Utf8.parse(key.substring(0, 8)); // Pierwsze 8 znaków klucza jako IV
-
     // Szyfrowanie DES
-    const encrypted = CryptoJS.DES.encrypt(plainText, keyBytes, { iv: iv });
-    return encrypted.toString();
+    const encrypted = CryptoJS.DES.encrypt(plainText, key).toString();
+    return encrypted;
 };
 
-// Deszyfrowanie DES
 window.decryptDES = function (encryptedText, key) {
     // Sprawdzenie, czy CryptoJS jest załadowane
     if (typeof CryptoJS === 'undefined') {
@@ -48,33 +42,34 @@ window.decryptDES = function (encryptedText, key) {
         return;
     }
 
-    // Tworzenie klucza i wektora inicjalizacyjnego (IV) - przyjmujemy 8 pierwszych znaków klucza jako IV
-    const keyBytes = CryptoJS.enc.Utf8.parse(key); // Klucz DES
-    const iv = CryptoJS.enc.Utf8.parse(key.substring(0, 8)); // Pierwsze 8 znaków klucza jako IV
-
     // Deszyfrowanie DES
-    const decrypted = CryptoJS.DES.decrypt(encryptedText, keyBytes, { iv: iv });
+    const decrypted = CryptoJS.DES.decrypt(encryptedText, key);
     return decrypted.toString(CryptoJS.enc.Utf8);
 };
 
-// Szyfrowanie strumieniowe (RC4, z IV)
+//Funkcja szyfrująca tekst w trybie CTR za pomocą AES
 window.encryptStream = function (plainText, key, iv) {
-    // Sprawdzenie, czy CryptoJS jest załadowane
+    //Sprawdzenie, czy CryptoJS jest załadowane
     if (typeof CryptoJS === 'undefined') {
         console.error("CryptoJS is not loaded.");
         return;
     }
 
-    // Generowanie IV w formacie odpowiednim dla CryptoJS
-    const ivBytes = CryptoJS.enc.Utf8.parse(iv); // Wektor inicjalizacji
-    const keyBytes = CryptoJS.enc.Utf8.parse(key); // Klucz
+    //Konwertowanie klucza i wektora inicjalizacyjnego do formatu WordArray
+    var keyHex = CryptoJS.enc.Utf8.parse(key);
+    var ivHex = CryptoJS.enc.Utf8.parse(iv);
 
-    // Szyfrowanie strumieniowe przy użyciu RC4
-    const encrypted = CryptoJS.RC4.encrypt(plainText, keyBytes);
-    return encrypted.toString();
+    //Szyfrowanie za pomocą AES w trybie CTR
+    const encrypted = CryptoJS.AES.encrypt(plainText, keyHex, {
+        iv: ivHex,
+        mode: CryptoJS.mode.CTR,
+        padding: CryptoJS.pad.NoPadding
+    });
+
+    return encrypted.toString(); //Zwracamy zaszyfrowany tekst w formacie Base64
 };
 
-// Deszyfrowanie strumieniowe (RC4, z IV)
+// Funkcja deszyfrująca tekst w trybie CTR za pomocą AES
 window.decryptStream = function (encryptedText, key, iv) {
     // Sprawdzenie, czy CryptoJS jest załadowane
     if (typeof CryptoJS === 'undefined') {
@@ -82,11 +77,59 @@ window.decryptStream = function (encryptedText, key, iv) {
         return;
     }
 
-    // Generowanie IV w formacie odpowiednim dla CryptoJS
-    const ivBytes = CryptoJS.enc.Utf8.parse(iv); // Wektor inicjalizacji
-    const keyBytes = CryptoJS.enc.Utf8.parse(key); // Klucz
+    //Konwertowanie klucza i wektora inicjalizacyjnego do formatu WordArray
+    var keyHex = CryptoJS.enc.Utf8.parse(key);
+    var ivHex = CryptoJS.enc.Utf8.parse(iv);
 
-    // Deszyfrowanie strumieniowe przy użyciu RC4
-    const decrypted = CryptoJS.RC4.decrypt(encryptedText, keyBytes);
+    //Deszyfrowanie za pomocą AES w trybie CTR
+    const decrypted = CryptoJS.AES.decrypt(encryptedText, keyHex, {
+        iv: ivHex,
+        mode: CryptoJS.mode.CTR,
+        padding: CryptoJS.pad.NoPadding
+    });
+
+    //Zwracamy odszyfrowany tekst
+    return decrypted.toString(CryptoJS.enc.Utf8);
+};
+
+window.encryptDESStream = function (plainText, key, iv) {
+    // Sprawdzenie, czy CryptoJS jest załadowane
+    if (typeof CryptoJS === 'undefined') {
+        console.error("CryptoJS is not loaded.");
+        return;
+    }
+
+    //Konwersja klucza i wektora do odpowiednich formatów
+    const keyHex = CryptoJS.enc.Utf8.parse(key);
+    const ivHex = CryptoJS.enc.Utf8.parse(iv);
+
+    // Szyfrowanie w trybie strumieniowym (ECB z IV)
+    const encrypted = CryptoJS.DES.encrypt(plainText, keyHex, {
+        iv: ivHex,
+        mode: CryptoJS.mode.CBC,
+        padding: CryptoJS.pad.Pkcs7
+    });
+
+    return encrypted.toString();
+};
+
+window.decryptDESStream = function (encryptedText, key, iv) {
+    //Sprawdzenie, czy CryptoJS jest załadowane
+    if (typeof CryptoJS === 'undefined') {
+        console.error("CryptoJS is not loaded.");
+        return;
+    }
+
+    //Konwersja klucza i wektora do odpowiednich formatów
+    const keyHex = CryptoJS.enc.Utf8.parse(key);
+    const ivHex = CryptoJS.enc.Utf8.parse(iv);
+
+    //Deszyfrowanie w trybie strumieniowym (ECB z IV)
+    const decrypted = CryptoJS.DES.decrypt(encryptedText, keyHex, {
+        iv: ivHex,
+        mode: CryptoJS.mode.CBC,
+        padding: CryptoJS.pad.Pkcs7
+    });
+
     return decrypted.toString(CryptoJS.enc.Utf8);
 };
