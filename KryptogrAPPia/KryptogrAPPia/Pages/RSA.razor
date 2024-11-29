@@ -1,0 +1,61 @@
+﻿@page "/RSA"
+@inject IJSRuntime JS
+
+<PageTitle>RSA Encryption</PageTitle>
+
+<div class="container d-flex flex-column gap-4">
+    <h4 class="text-center">RSA Encryption/Decryption</h4>
+
+    <div class="container-fluid d-flex flex-column gap-2">
+        <button @onclick="GenerateKeys">Generuj klucze RSA</button>
+    </div>
+
+    @if (!string.IsNullOrEmpty(PublicKey))
+    {
+        <div class="container-fluid d-flex flex-column gap-2">
+            <h5>Klucz publiczny:</h5>
+            <textarea readonly>@PublicKey</textarea>
+        </div>
+    }
+
+    @if (!string.IsNullOrEmpty(PrivateKey))
+    {
+        <div class="container-fluid d-flex flex-column gap-2">
+            <h5>Klucz prywatny:</h5>
+            <textarea readonly>@PrivateKey</textarea>
+        </div>
+    }
+
+    <div class="container-fluid d-flex flex-column gap-2">
+        <div>
+            <label for="message">Wiadomość do zaszyfrowania:</label>
+            <input type="text" id="message" @bind="Message" />
+        </div>
+        <button @onclick="EncryptMessage" disabled="@string.IsNullOrEmpty(PublicKey)">Zaszyfruj</button>
+    </div>
+
+    @if (!string.IsNullOrEmpty(EncryptedMessage))
+    {
+        <div class="container-fluid d-flex flex-column gap-2">
+            <h5>Szyfrogram:</h5>
+            <textarea readonly>@EncryptedMessage</textarea>
+        </div>
+    }
+
+    <div class="container-fluid d-flex flex-column gap-2">
+        <button @onclick="DecryptMessage" disabled="@string.IsNullOrEmpty(PrivateKey)">Odszyfruj</button>
+    </div>
+
+    @if (!string.IsNullOrEmpty(DecryptedMessage))
+    {
+        <div class="container-fluid d-flex flex-column gap-2">
+            <h5>Odszyfrowana wiadomość:</h5>
+            <textarea readonly>@DecryptedMessage</textarea>
+        </div>
+    }
+
+    @if (!string.IsNullOrEmpty(ErrorMessage))
+    {
+        <div class="alert alert-danger">@ErrorMessage</div>
+    }
+</div>

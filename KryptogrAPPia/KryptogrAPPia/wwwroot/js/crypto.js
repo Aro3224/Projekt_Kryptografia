@@ -133,3 +133,38 @@ window.decryptDESStream = function (encryptedText, key, iv) {
 
     return decrypted.toString(CryptoJS.enc.Utf8);
 };
+
+window.generateRSAKeys = function () {
+    if (typeof forge === 'undefined') {
+        console.error("Forge library is not loaded.");
+        return;
+    }
+
+    const keypair = forge.pki.rsa.generateKeyPair({ bits: 2048, e: 0x10001 });
+    return {
+        PublicKey: forge.pki.publicKeyToPem(keypair.publicKey),
+        PrivateKey: forge.pki.privateKeyToPem(keypair.privateKey),
+    };
+};
+
+window.encryptRSA = function (message, publicKeyPem) {
+    if (typeof forge === 'undefined') {
+        console.error("Forge library is not loaded.");
+        return;
+    }
+
+    const publicKey = forge.pki.publicKeyFromPem(publicKeyPem);
+    const encrypted = publicKey.encrypt(message, 'RSA-OAEP');
+    return forge.util.encode64(encrypted);
+};
+
+window.decryptRSA = function (encryptedMessage, privateKeyPem) {
+    if (typeof forge === 'undefined') {
+        console.error("Forge library is not loaded.");
+        return;
+    }
+
+    const privateKey = forge.pki.privateKeyFromPem(privateKeyPem);
+    const encryptedBytes = forge.util.decode64(encryptedMessage);
+    return privateKey.decrypt(encryptedBytes, 'RSA-OAEP');
+};
