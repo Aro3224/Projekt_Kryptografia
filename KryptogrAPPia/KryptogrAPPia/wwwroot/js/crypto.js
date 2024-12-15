@@ -199,3 +199,42 @@ window.generateHMAC = async function (message, key, algorithm) {
         throw error;
     }
 };
+
+window.generateRSAKeys = function () {
+    if (typeof forge === 'undefined') {
+        console.error("Forge library is not loaded.");
+        return;
+    }
+
+    const keypair = forge.pki.rsa.generateKeyPair({ bits: 2048, e: 0x10001 });
+    return {
+        PublicKey: forge.pki.publicKeyToPem(keypair.publicKey),
+        PrivateKey: forge.pki.privateKeyToPem(keypair.privateKey),
+    };
+};
+
+window.signMessage = function (message, privateKeyPem) {
+    if (typeof forge === 'undefined') {
+        console.error("Forge library is not loaded.");
+        return;
+    }
+
+    const privateKey = forge.pki.privateKeyFromPem(privateKeyPem);
+    const md = forge.md.sha256.create();
+    md.update(message, "utf8");
+    const signature = privateKey.sign(md);
+    return forge.util.encode64(signature);
+};
+
+window.verifyMessage = function (message, signature, publicKeyPem) {
+    if (typeof forge === 'undefined') {
+        console.error("Forge library is not loaded.");
+        return false;
+    }
+
+    const publicKey = forge.pki.publicKeyFromPem(publicKeyPem);
+    const md = forge.md.sha256.create();
+    md.update(message, "utf8");
+    const decodedSignature = forge.util.decode64(signature);
+    return publicKey.verify(md.digest().bytes(), decodedSignature);
+};

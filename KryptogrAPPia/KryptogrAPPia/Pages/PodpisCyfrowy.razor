@@ -1,0 +1,60 @@
+﻿@page "/podpis-cyfrowy"
+@inject IJSRuntime JS
+
+<PageTitle>Digital Signature</PageTitle>
+
+<div class="container d-flex flex-column gap-4">
+    <h4 class="text-center">Podpis Cyfrowy</h4>
+
+    <div class="container-fluid d-flex flex-column gap-2">
+        <button @onclick="GenerateKeys" disabled="@isSigningInProgress">Generuj klucze RSA</button>
+    </div>
+
+    @if (!string.IsNullOrEmpty(PublicKey))
+    {
+        <div class="container-fluid d-flex flex-column gap-2">
+            <h5>Klucz publiczny:</h5>
+            <textarea readonly>@PublicKey</textarea>
+        </div>
+    }
+
+    @if (!string.IsNullOrEmpty(PrivateKey))
+    {
+        <div class="container-fluid d-flex flex-column gap-2">
+            <h5>Klucz prywatny:</h5>
+            <textarea readonly>@PrivateKey</textarea>
+        </div>
+    }
+
+    <div class="container-fluid d-flex flex-column gap-2">
+        <div>
+            <label for="message">Wiadomość:</label>
+            <input type="text" id="message" @bind="Message" />
+        </div>
+        <button @onclick="SignMessage" disabled="@string.IsNullOrEmpty(PrivateKey)">Podpisz wiadomość</button>
+    </div>
+
+    @if (!string.IsNullOrEmpty(Signature))
+    {
+        <div class="container-fluid d-flex flex-column gap-2">
+            <h5>Podpis cyfrowy:</h5>
+            <textarea readonly>@Signature</textarea>
+        </div>
+    }
+
+    <div class="container-fluid d-flex flex-column gap-2">
+        <button @onclick="VerifySignature" disabled="@string.IsNullOrEmpty(PublicKey)">Zweryfikuj podpis</button>
+    </div>
+
+    @if (VerificationResult.HasValue)
+    {
+        <div class="alert alert-@(VerificationResult.Value ? "success" : "danger")">
+            @(VerificationResult.Value ? "Podpis jest prawidłowy." : "Podpis jest nieprawidłowy.")
+        </div>
+    }
+
+    @if (!string.IsNullOrEmpty(ErrorMessage))
+    {
+        <div class="alert alert-danger">@ErrorMessage</div>
+    }
+</div>
