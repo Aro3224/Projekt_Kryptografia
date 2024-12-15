@@ -1,0 +1,145 @@
+﻿@page "/diffie-hellman"
+@using System.Numerics
+
+<PageTitle>Diffie-Hellman</PageTitle>
+
+<div class="container d-flex flex-column gap-4">
+    <h4 class="text-center">Algorytm Diffie-Hellman</h4>
+
+    <div class="container-fluid d-flex flex-column gap-2">
+        <div>
+            <label for="prime">Liczba pierwsza (p):</label>
+            <input type="text" id="prime" @bind="PrimeInput" />
+        </div>
+        <div>
+            <label for="base">Podstawa (g):</label>
+            <input type="text" id="base" @bind="BaseInput" />
+        </div>
+        <button @onclick="GenerateKeys" disabled="@isKeyExchangeInProgress">Generuj klucze</button>
+    </div>
+
+    @if (!string.IsNullOrEmpty(PrivateKeyA) && !string.IsNullOrEmpty(PrivateKeyB))
+    {
+        <div class="container-fluid d-flex flex-column gap-2">
+            <h5>Klucze publiczne:</h5>
+            <p>Strona A - Publiczny klucz: <strong>@PublicKeyA</strong></p>
+            <p>Strona B - Publiczny klucz: <strong>@PublicKeyB</strong></p>
+        </div>
+    }
+
+    <button @onclick="ExchangeKeys">Wymień klucze</button>
+
+    @if (!string.IsNullOrEmpty(SharedSecretA) && !string.IsNullOrEmpty(SharedSecretB))
+    {
+        <div class="container-fluid d-flex flex-column gap-2">
+            <h5>Wspólne sekrety:</h5>
+            <p>Strona A - Wspólny sekret: <strong>@SharedSecretA</strong></p>
+            <p>Strona B - Wspólny sekret: <strong>@SharedSecretB</strong></p>
+        </div>
+    }
+
+    @if (!string.IsNullOrEmpty(ErrorMessage))
+    {
+        <div class="alert alert-danger">@ErrorMessage</div>
+    }
+</div>
+
+@code {
+    private string PrimeInput { get; set; } = string.Empty;
+    private string BaseInput { get; set; } = string.Empty;
+    private string PrivateKeyA { get; set; } = string.Empty;
+    private string PrivateKeyB { get; set; } = string.Empty;
+    private string PublicKeyA { get; set; } = string.Empty;
+    private string PublicKeyB { get; set; } = string.Empty;
+    private string SharedSecretA { get; set; } = string.Empty;
+    private string SharedSecretB { get; set; } = string.Empty;
+    private string ErrorMessage { get; set; } = string.Empty;
+
+    private bool isKeyExchangeInProgress { get; set; } = false;
+
+    private void GenerateKeys()
+    {
+        try
+        {
+            ErrorMessage = string.Empty;
+
+            if (!IsPrime(PrimeInput))
+            {
+                ErrorMessage = "Podana liczba nie jest liczbą pierwszą.";
+                isKeyExchangeInProgress = false;
+                return;
+            }
+
+            var p = int.Parse(PrimeInput);
+            var g = int.Parse(BaseInput);
+
+            PrivateKeyA = new Random().Next(1, p - 1).ToString();
+            PublicKeyA = CalculatePublicKey(g, int.Parse(PrivateKeyA), p);
+
+            PrivateKeyB = new Random().Next(1, p - 1).ToString();
+            PublicKeyB = CalculatePublicKey(g, int.Parse(PrivateKeyB), p);
+
+            isKeyExchangeInProgress = true;
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Błąd: {ex.Message}";
+            isKeyExchangeInProgress = false;
+        }
+    }
+
+    private void ExchangeKeys()
+    {
+        try
+        {
+            ErrorMessage = string.Empty;
+
+            if (string.IsNullOrEmpty(PublicKeyA) || string.IsNullOrEmpty(PublicKeyB))
+            {
+                ErrorMessage = "Najpierw wygeneruj klucze publiczne obu stron.";
+                isKeyExchangeInProgress = false;
+                return;
+            }
+
+            var p = int.Parse(PrimeInput);
+
+            SharedSecretA = CalculateSharedSecret(int.Parse(PublicKeyB), int.Parse(PrivateKeyA), p);
+            SharedSecretB = CalculateSharedSecret(int.Parse(PublicKeyA), int.Parse(PrivateKeyB), p);
+
+            isKeyExchangeInProgress = false;
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Błąd: {ex.Message}";
+            isKeyExchangeInProgress = false;
+        }
+    }
+
+    private string CalculatePublicKey(int g, int privateKey, int p)
+    {
+        return (BigInteger.ModPow(g, privateKey, p)).ToString();
+    }
+
+    private string CalculateSharedSecret(int publicKey, int privateKey, int p)
+    {
+        return (BigInteger.ModPow(publicKey, privateKey, p)).ToString();
+    }
+
+    private bool IsPrime(string input)
+    {
+        int num = int.Parse(input);
+        if (num <= 1) return false;
+        if (num <= 3) return true;
+        if (num % 2 == 0 || num % 3 == 0) return false;
+
+        int i = 5;
+        while (i * i <= num)
+        {
+            if (num % i == 0 || num % (i + 2) == 0)
+                return false;
+            i += 6;
+        }
+
+        return true;
+    }
+}
