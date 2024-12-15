@@ -168,3 +168,34 @@ window.decryptRSA = function (encryptedMessage, privateKeyPem) {
     const encryptedBytes = forge.util.decode64(encryptedMessage);
     return privateKey.decrypt(encryptedBytes, 'RSA-OAEP');
 };
+
+window.generateHMAC = async function (message, key, algorithm) {
+    try {
+        if (!window.crypto || !window.crypto.subtle) {
+            throw new Error("Web Crypto API nie jest obsługiwane w tej przeglądarce.");
+        }
+
+        const encoder = new TextEncoder();
+        const keyData = encoder.encode(key);
+        const messageData = encoder.encode(message);
+
+        const cryptoKey = await window.crypto.subtle.importKey(
+            "raw",
+            keyData,
+            { name: "HMAC", hash: { name: algorithm } },
+            false,
+            ["sign"]
+        );
+
+        const signature = await window.crypto.subtle.sign(
+            "HMAC",
+            cryptoKey,
+            messageData
+        );
+
+        return btoa(String.fromCharCode(...new Uint8Array(signature)));
+    } catch (error) {
+        console.error("Błąd generowania HMAC:", error);
+        throw error;
+    }
+};
