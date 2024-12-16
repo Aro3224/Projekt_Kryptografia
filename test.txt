@@ -1,0 +1,1 @@
+To jest zawartość pliku, która zostanie użyta do zaszyfrowania i odszyfrowania :)
